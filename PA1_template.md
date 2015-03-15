@@ -1,8 +1,11 @@
 ---
 title: "Reproducible Research - Peer Assesssment 1"
 author: "AB"
-date: "Tuesday, March 10, 2015"
-output: html_document
+date: "Saturday, March 14, 2015"
+output:
+  html_document:
+    theme: united
+    highlight: tango
 ---
 
 ============================================
@@ -29,20 +32,25 @@ The variables included in this dataset are:
 *The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.*  
 
 #Assignment
-This assignment will be described in multiple parts.
 You will need to write a report that answers the questions detailed below in a single R markdown document that can be processed by knitr and be transformed into an HTML file.
 Throughout your report make sure you always include the code that you used to generate the output you present.
 When writing code chunks in the R markdown document, always use echo = TRUE so that someone else will be able to read the code.
 For the plotting aspects of this assignment, feel free to use any plotting system in R (i.e., base, lattice, ggplot2)
-###Step 2: Fork/clone the GitHub repository created for this assignment.
 
 
-#Part 1 : Loading and preprocessing the data
+##Part 1: Loading and preprocessing the data
   
 - Loading the data
 ```{r loaddata,echo=TRUE}
 setwd("C:/Users/ore/Desktop/Coursera/5_Reproducible_Research/data")
 activity = read.csv("activity.csv")
+```
+
+- Use libraries  
+
+```{r,echo=TRUE}
+library(knitr)
+library(markdown)
 ```
 
 - Process/transform the data into a format suitable for analysis
@@ -58,7 +66,12 @@ total1 <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
 - Make a histogram of the total number of steps taken per day
 
 ```{r,echo=TRUE}
+#Graph plot1
 hist(total1$steps, col = "gray", border = "pink", main = paste("Histogram of total steps per day"),xlab = "Total steps per day")
+#Save plot1
+dev.copy(png,'plot1.png')
+#Complete the writing process and return output to your monitor
+dev.off()
 ```
 
 - Calculate and report the mean and median of the total number of steps taken per day
@@ -80,7 +93,12 @@ and the average number of steps taken, averaged across all days (y-axis)
 interval1 <- aggregate(steps ~ interval, data = activity, mean, na.rm = TRUE)
 #Generate the line plot of the 5-minute interval  (x-axis)
 #and the average number of steps averaged per day (y-axis)
+#Graph plot2
 plot(steps ~ interval, data = interval1, type = "l", col = "gray", main ="Average number of steps per day",xlab="Interval", ylab = "Average number of steps")
+#Save plot2
+dev.copy(png,'plot2.png')
+#Complete the writing process and return output to your monitor
+dev.off()
 ```
 
 ###**Question 3** : Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -90,7 +108,7 @@ plot(steps ~ interval, data = interval1, type = "l", col = "gray", main ="Averag
 interval1[which.max(interval1$steps), ]$interval
 ```
 
-##Imputing missing values
+##Part 2: Imputing missing values
 
 *Note that there are a number of days/intervals where there are missing values (coded as NA).*  
 *The presence of missing days may introduce bias into some calculations or summaries of the data.*
@@ -136,7 +154,12 @@ cat("There was a total of",count,"NA values that were filled.\n\r")
 
 ```{r,echo=TRUE}
 total3 <- aggregate(steps ~ date, data = total2, sum)
+#Graph plot3
 hist(total3$steps, col = "gray", border = "pink", main="Histogram of total steps per day", xlab="Total steps in a day")
+#Save plot3
+dev.copy(png,'plot3.png')
+#Complete the writing process and return output to your monitor
+dev.off()
 #Mean of total number of steps per day
 mean(total3$steps)
 #Median of total number of steps per day
@@ -156,7 +179,8 @@ It can create a small difference.
 For this part the weekdays() function may be of some help here.
 Use the dataset with the filled-in missing values for this part.
 
-###Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+##Part 3: Create a new factor variable in the dataset  
+**Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.**
 
 ```{r,echo=TRUE}
 #Convert days
@@ -164,7 +188,7 @@ total2$day = ifelse(as.POSIXlt(as.Date(total2$date))$wday%%6 ==
     0, "weekend", "weekday")
 ```
 
-# For Sunday and Saturday : weekend, Other days : weekday
+###For Sunday and Saturday : weekend, Other days : weekday
 
 ```{r,echo=TRUE}
 total2$day = factor(total2$day, levels = c("weekday", "weekend"))
@@ -174,8 +198,21 @@ total2$day = factor(total2$day, levels = c("weekday", "weekend"))
 
 ```{r,echo=TRUE}
 interval2 = aggregate(steps ~ interval + day, total2, mean)
+
+#Library lattice
 library(lattice)
+#Graph plot4
 xyplot(steps ~ interval | factor(day), data = interval2, aspect = 1/2, 
     type = "l",xlab="Interval", 
       ylab = "Average number of steps")
+#Save plot4
+dev.copy(png,'plot4.png')
+#Complete the writing process and return output to your monitor
+dev.off()
+```
+
+
+```{r,echo=TRUE}
+#transform the .md to HTML format
+markdownToHTML("PA1_template.md", "PA1_template.html",fragment.only = TRUE)
 ```
